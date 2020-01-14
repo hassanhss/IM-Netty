@@ -1,10 +1,14 @@
 package cn.hassan.handler.server;
 
 import cn.hassan.core.DateTimeUtils;
+import cn.hassan.core.Session;
+import cn.hassan.core.SessionUtil;
 import cn.hassan.packet.LoginRequestPacket;
 import cn.hassan.packet.LoginResponsePacket;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+
+import java.util.UUID;
 
 /**
  * Created with idea
@@ -15,8 +19,14 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginRequestPacket> {
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, LoginRequestPacket msg) throws Exception {
-		System.out.println(DateTimeUtils.getLocalDate() + " 收到客户端登陆请求");
+
+		String userId = UUID.randomUUID().toString();
+
+		SessionUtil.bindSession(new Session(userId,msg.getUsername()),ctx.channel());
+
 		LoginResponsePacket responsePacket = new LoginResponsePacket();
+		responsePacket.setUserId(userId);
+		System.out.println(DateTimeUtils.getLocalDate() + " 收到客户端登陆请求");
 		responsePacket.setVersion(msg.getVersion());
 		if (validate(msg)) {
 			responsePacket.setSuccess(true);
@@ -32,7 +42,12 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
 		if (requestPacket.getUsername().equals("hassan") && requestPacket.getPassword().equals("123456")) {
 			return true;
 		}else {
-			return false;
+			return true;
 		}
+	}
+
+	@Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+		SessionUtil.unBindSession(ctx.channel());
 	}
 }

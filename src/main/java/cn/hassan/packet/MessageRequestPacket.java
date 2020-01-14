@@ -16,6 +16,8 @@ import static cn.hassan.core.Command.MESSAGE_REQUEST;
 @AllArgsConstructor
 public class MessageRequestPacket extends Packet {
 
+	private String toUserId;
+
 	private String message;
 
 	@Override

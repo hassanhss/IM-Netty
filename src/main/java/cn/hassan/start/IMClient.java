@@ -1,8 +1,9 @@
 package cn.hassan.start;
 
-import cn.hassan.core.LoginUtil;
+import cn.hassan.core.SessionUtil;
 import cn.hassan.handler.clinet.LoginResponseHandler;
 import cn.hassan.handler.clinet.MessageResponseHandler;
+import cn.hassan.packet.LoginRequestPacket;
 import cn.hassan.packet.MessageRequestPacket;
 import cn.hassan.packet.base.PackerDecoder;
 import cn.hassan.packet.base.PacketEncoder;
@@ -15,9 +16,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
-import java.util.Objects;
 import java.util.Scanner;
 
 /**
@@ -66,17 +65,32 @@ public class IMClient {
 	}
 
 	private static void startConsoleThread(Channel channel) {
+		Scanner scanner = new Scanner(System.in);
+		LoginRequestPacket loginRequestPacket = new LoginRequestPacket();
 		new Thread(() -> {
 			while (!Thread.interrupted()) {
-				if (LoginUtil.hasLogin(channel)) {
-					System.out.println("输入消息发送到服务端：");
-					Scanner scanner = new Scanner(System.in);
-					String line = scanner.nextLine();
-					if (Objects.nonNull(line) && !line.equalsIgnoreCase("")) {
-						channel.writeAndFlush(new MessageRequestPacket(line));
-					}
+				if (!SessionUtil.hasLogin(channel)) {
+					System.out.print("输入用户名登录: ");
+					String username = scanner.nextLine();
+					loginRequestPacket.setUsername(username);
+					// 密码使用默认的
+					loginRequestPacket.setPassword("pwd");
+					// 发送登录数据包
+					channel.writeAndFlush(loginRequestPacket);
+					waitForLoginResponse();
+				}else {
+					String toUserId = scanner.next();
+					String message = scanner.next();
+					channel.writeAndFlush(new MessageRequestPacket(toUserId, message));
 				}
 			}
 		}).start();
+	}
+
+	private static void waitForLoginResponse() {
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException ignored) {
+		}
 	}
 }
