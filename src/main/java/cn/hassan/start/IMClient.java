@@ -1,5 +1,6 @@
 package cn.hassan.start;
 
+import cn.hassan.core.LoginUtil;
 import cn.hassan.handler.clinet.ClientHandler;
 import cn.hassan.packet.MessageRequestPacket;
 import cn.hassan.packet.base.PacketCodeC;
@@ -12,6 +13,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
+import java.util.Objects;
 import java.util.Scanner;
 
 /**
@@ -53,15 +55,18 @@ public class IMClient {
 	private static void startConsoleThread(Channel channel) {
 		new Thread(() -> {
 			while (!Thread.interrupted()) {
-				System.out.println("输入消息发送到服务端：");
-				Scanner scanner = new Scanner(System.in);
-				String line = scanner.nextLine();
+				if (LoginUtil.hasLogin(channel)) {
+					System.out.println("输入消息发送到服务端：");
+					Scanner scanner = new Scanner(System.in);
+					String line = scanner.nextLine();
+					if (Objects.nonNull(line) && !line.equalsIgnoreCase("")) {
+						MessageRequestPacket requestPacket = new MessageRequestPacket();
+						requestPacket.setMessage(line);
 
-				MessageRequestPacket requestPacket = new MessageRequestPacket();
-				requestPacket.setMessage(line);
-
-				ByteBuf byteBuf = PacketCodeC.INSTANCE.encode(channel.alloc(), requestPacket);
-				channel.writeAndFlush(byteBuf);
+						ByteBuf byteBuf = PacketCodeC.INSTANCE.encode(channel.alloc(), requestPacket);
+						channel.writeAndFlush(byteBuf);
+					}
+				}
 			}
 		}).start();
 	}
