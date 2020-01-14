@@ -1,13 +1,11 @@
 package cn.hassan.start;
 
-import cn.hassan.handler.FirstServerHandler;
+import cn.hassan.handler.server.ServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 
 public class IMServer {
     public static void main(String[] args) {
@@ -20,7 +18,7 @@ public class IMServer {
                 .channel(NioServerSocketChannel.class)
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {
                     protected void initChannel(NioSocketChannel ch) throws Exception {
-						ch.pipeline().addLast(new FirstServerHandler());
+						ch.pipeline().addLast(new ServerHandler());
                     }
                 });
 		bind(bootstrap, 8085);

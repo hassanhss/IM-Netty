@@ -19,6 +19,8 @@ public class PacketCodeC {
 
 	private static final int MAGIC_NUMBER = 0x66688898;
 
+	public static final PacketCodeC INSTANCE = new PacketCodeC();
+
 	private  final Map<Byte, Class<? extends Packet>> packetTypeMap;
 	private  final Map<Byte, Serializer> serializerMap;
 

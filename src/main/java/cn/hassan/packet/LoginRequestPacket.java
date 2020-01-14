@@ -12,9 +12,9 @@ import static cn.hassan.core.Command.LOGIN_REQUEST;
  * Description: 登录数据包
  */
 @Data
-public class LoginRequtestPacket extends Packet {
+public class LoginRequestPacket extends Packet {
 
-	private Integer userId;
+	private String userId;
 	private String username;
 	private String password;
 

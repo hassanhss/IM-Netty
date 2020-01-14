@@ -1,6 +1,6 @@
 package cn.hassan.start;
 
-import cn.hassan.handler.FirstClientHandler;
+import cn.hassan.handler.clinet.ClientHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -22,7 +22,7 @@ public class IMClient {
 				.channel(NioSocketChannel.class)
 				.handler(new ChannelInitializer<SocketChannel>() {
 					protected void initChannel(SocketChannel ch) throws Exception {
-						ch.pipeline().addLast(new FirstClientHandler());
+						ch.pipeline().addLast(new ClientHandler());
 					}
 				});
 		connect(bootstrap,"127.0.0.1",8085);
