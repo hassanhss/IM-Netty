@@ -15,7 +15,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginRequestPacket> {
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, LoginRequestPacket msg) throws Exception {
-		System.out.println(DateTimeUtils.getLocalDate() + "收到客户端登陆请求");
+		System.out.println(DateTimeUtils.getLocalDate() + " 收到客户端登陆请求");
 		LoginResponsePacket responsePacket = new LoginResponsePacket();
 		responsePacket.setVersion(msg.getVersion());
 		if (validate(msg)) {
