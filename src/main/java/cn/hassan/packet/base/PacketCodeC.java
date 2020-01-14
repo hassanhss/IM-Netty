@@ -26,12 +26,12 @@ public class PacketCodeC {
 
 	public static final PacketCodeC INSTANCE = new PacketCodeC();
 
-	private  final Map<Byte, Class<? extends Packet>> packetTypeMap;
-	private  final Map<Byte, Serializer> serializerMap;
+	private final Map<Byte, Class<? extends Packet>> packetTypeMap;
+	private final Map<Byte, Serializer> serializerMap;
 
-	private PacketCodeC(){
+
+	private PacketCodeC() {
 		packetTypeMap = new HashMap<>();
-
 		packetTypeMap.put(LOGIN_REQUEST, LoginRequestPacket.class);
 		packetTypeMap.put(LOGIN_RESPONSE, LoginResponsePacket.class);
 
@@ -41,17 +41,13 @@ public class PacketCodeC {
 	}
 
 
-	/**
-	 * 协议结构： 魔数（4个字节）---版本号（1字节）---序列化算法（1字节）---指令（1字节）---数据长度（4字节）---数据（N字节）
-	 * @param packet
-	 * @return
-	 */
-	public ByteBuf encode(Packet packet) {
-		//1，创建ByteBuf对象
-		ByteBuf byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
-		//2，序列化java对象
+	public ByteBuf encode(ByteBufAllocator byteBufAllocator, Packet packet) {
+		// 1. 创建 ByteBuf 对象
+		ByteBuf byteBuf = byteBufAllocator.ioBuffer();
+		// 2. 序列化 java 对象
 		byte[] bytes = Serializer.DEFAULT.serialise(packet);
-		//封装对象
+
+		// 3. 实际编码过程
 		byteBuf.writeInt(MAGIC_NUMBER);
 		byteBuf.writeByte(packet.getVersion());
 		byteBuf.writeByte(Serializer.DEFAULT.getSerializerAlgorithm());
@@ -62,33 +58,43 @@ public class PacketCodeC {
 		return byteBuf;
 	}
 
+
 	public Packet decode(ByteBuf byteBuf) {
-		//跳过魔数
+		// 跳过 magic number
 		byteBuf.skipBytes(4);
-		//跳过版本
+
+		// 跳过版本号
 		byteBuf.skipBytes(1);
-		//序列化算法
-		byte serializerAlgorithm = byteBuf.readByte();
-		//指令
+
+		// 序列化算法
+		byte serializeAlgorithm = byteBuf.readByte();
+
+		// 指令
 		byte command = byteBuf.readByte();
-		//数据长度
-		int length = byteBuf.readByte();
+
+		// 数据包长度
+		int length = byteBuf.readInt();
+
 		byte[] bytes = new byte[length];
-		byteBuf.writeBytes(bytes);
+		byteBuf.readBytes(bytes);
 
 		Class<? extends Packet> requestType = getRequestType(command);
-		Serializer serializer = getSerializer(serializerAlgorithm);
+		Serializer serializer = getSerializer(serializeAlgorithm);
+
 		if (requestType != null && serializer != null) {
 			return serializer.deserialize(requestType, bytes);
 		}
+
 		return null;
 	}
 
-	private Class<? extends Packet> getRequestType(byte command) {
-		return packetTypeMap.get(command);
+	private Serializer getSerializer(byte serializeAlgorithm) {
+
+		return serializerMap.get(serializeAlgorithm);
 	}
 
-	private Serializer getSerializer(byte serializeAlgorithm) {
-		return serializerMap.get(serializeAlgorithm);
+	private Class<? extends Packet> getRequestType(byte command) {
+
+		return packetTypeMap.get(command);
 	}
 }

@@ -35,7 +35,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 				responsePacket.setReason("用户名或密码错误！");
 			}
 		}
-		ByteBuf responseBuf = PacketCodeC.INSTANCE.encode(responsePacket);
+		ByteBuf responseBuf = PacketCodeC.INSTANCE.encode(ctx.alloc(),responsePacket);
 		ctx.channel().writeAndFlush(responseBuf);
 	}
 
