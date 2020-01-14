@@ -1,6 +1,7 @@
 package cn.hassan.start;
 
 import cn.hassan.core.DateTimeUtils;
+import cn.hassan.handler.server.AuthHandler;
 import cn.hassan.handler.server.LoginRequestHandler;
 import cn.hassan.handler.server.MessageRequestHandler;
 import cn.hassan.handler.server.ServerHandler;
@@ -30,6 +31,7 @@ public class IMServer {
 						ch.pipeline().addLast(new Spliter());
 						ch.pipeline().addLast(new PackerDecoder());
 						ch.pipeline().addLast(new LoginRequestHandler());
+						ch.pipeline().addLast(new AuthHandler());
 						ch.pipeline().addLast(new MessageRequestHandler());
 						ch.pipeline().addLast(new PacketEncoder());
                     }
