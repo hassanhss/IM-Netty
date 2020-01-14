@@ -27,7 +27,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 			LoginRequestPacket requestPacket = (LoginRequestPacket) packet;
 
 			responsePacket = new LoginResponsePacket();
-			responsePacket.setVersion(packet.getVersion());
+			responsePacket.setVersion(requestPacket.getVersion());
 			if (validate(requestPacket)) {
 				responsePacket.setSuccess(true);
 			}else {
