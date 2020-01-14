@@ -4,6 +4,8 @@ import cn.hassan.core.Packet;
 import cn.hassan.core.Serializer;
 import cn.hassan.packet.LoginRequestPacket;
 import cn.hassan.packet.LoginResponsePacket;
+import cn.hassan.packet.MessageRequestPacket;
+import cn.hassan.packet.MessageResponsePacket;
 import cn.hassan.serialisers.JsonSerializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -11,8 +13,7 @@ import io.netty.buffer.ByteBufAllocator;
 import java.util.HashMap;
 import java.util.Map;
 
-import static cn.hassan.core.Command.LOGIN_REQUEST;
-import static cn.hassan.core.Command.LOGIN_RESPONSE;
+import static cn.hassan.core.Command.*;
 
 /**
  * Created with idea
@@ -32,8 +33,11 @@ public class PacketCodeC {
 
 	private PacketCodeC() {
 		packetTypeMap = new HashMap<>();
+
 		packetTypeMap.put(LOGIN_REQUEST, LoginRequestPacket.class);
 		packetTypeMap.put(LOGIN_RESPONSE, LoginResponsePacket.class);
+		packetTypeMap.put(MESSAGE_REQUEST, MessageRequestPacket.class);
+		packetTypeMap.put(MESSAGE_RESPONSE, MessageResponsePacket.class);
 
 		serializerMap = new HashMap<>();
 		Serializer serializer = new JsonSerializer();
