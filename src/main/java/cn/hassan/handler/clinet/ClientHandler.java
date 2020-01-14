@@ -1,8 +1,10 @@
 package cn.hassan.handler.clinet;
 
+import cn.hassan.core.LoginUtil;
 import cn.hassan.core.Packet;
 import cn.hassan.packet.LoginRequestPacket;
 import cn.hassan.packet.LoginResponsePacket;
+import cn.hassan.packet.MessageResponsePacket;
 import cn.hassan.packet.base.PacketCodeC;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -37,10 +39,14 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 		if (packet instanceof LoginResponsePacket) {
 			LoginResponsePacket responsePacket = (LoginResponsePacket) packet;
 			if (responsePacket.isSuccess()) {
+				LoginUtil.markAsLogin(ctx.channel());
 				System.out.println(new Date() + "：客户端登陆成功！");
 			}else {
 				System.out.println(new Date() + "：客户端登陆失败" + ": 原因" + responsePacket.getReason());
 			}
+		} else if (packet instanceof MessageResponsePacket) {
+			MessageResponsePacket messageResponsePacket = (MessageResponsePacket) packet;
+			System.out.println(new Date() + ": 收到服务端的消息: " + messageResponsePacket.getMessage());
 		}
 	}
 }
