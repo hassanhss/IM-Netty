@@ -36,7 +36,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 				responsePacket.setSuccess(false);
 				responsePacket.setReason("用户名或密码错误！");
 			}
-			ByteBuf responseBuf = PacketCodeC.INSTANCE.encode(ctx.alloc(),responsePacket);
+			ByteBuf responseBuf = PacketCodeC.INSTANCE.encode(ctx.alloc().ioBuffer(),responsePacket);
 			ctx.channel().writeAndFlush(responseBuf);
 		} else if (packet instanceof MessageRequestPacket) {
 			MessageRequestPacket messageRequestPacket = (MessageRequestPacket) packet;
@@ -45,7 +45,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 			MessageResponsePacket messageResponsePacket = new MessageResponsePacket();
 			messageResponsePacket.setMessage("服务端回复【" + messageRequestPacket.getMessage() + "】");
 
-			ByteBuf responseByteBuf = PacketCodeC.INSTANCE.encode(ctx.alloc(), messageResponsePacket);
+			ByteBuf responseByteBuf = PacketCodeC.INSTANCE.encode(ctx.alloc().ioBuffer(), messageResponsePacket);
 			ctx.channel().writeAndFlush(responseByteBuf);
 		}
 	}

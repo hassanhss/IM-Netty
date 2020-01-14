@@ -1,6 +1,7 @@
 package cn.hassan.packet;
 
 import cn.hassan.core.Packet;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import static cn.hassan.core.Command.MESSAGE_REQUEST;
@@ -12,6 +13,7 @@ import static cn.hassan.core.Command.MESSAGE_REQUEST;
  * Description:
  */
 @Data
+@AllArgsConstructor
 public class MessageRequestPacket extends Packet {
 
 	private String message;
