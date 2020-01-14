@@ -23,7 +23,7 @@ import static cn.hassan.core.Command.*;
  */
 public class PacketCodeC {
 
-	private static final int MAGIC_NUMBER = 0x66688898;
+	public static final int MAGIC_NUMBER = 0x66688898;
 
 	public static final PacketCodeC INSTANCE = new PacketCodeC();
 

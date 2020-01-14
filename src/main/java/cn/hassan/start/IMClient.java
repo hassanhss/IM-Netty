@@ -6,6 +6,7 @@ import cn.hassan.handler.clinet.MessageResponseHandler;
 import cn.hassan.packet.MessageRequestPacket;
 import cn.hassan.packet.base.PackerDecoder;
 import cn.hassan.packet.base.PacketEncoder;
+import cn.hassan.packet.base.Spliter;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -14,6 +15,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
 import java.util.Objects;
 import java.util.Scanner;
@@ -36,6 +38,9 @@ public class IMClient {
 				.option(ChannelOption.TCP_NODELAY, true)
 				.handler(new ChannelInitializer<SocketChannel>() {
 					protected void initChannel(SocketChannel ch) throws Exception {
+						//数据拆包粘包使用
+						//ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 7, 4));
+						ch.pipeline().addLast(new Spliter());
 						ch.pipeline().addLast(new PackerDecoder());
 						ch.pipeline().addLast(new LoginResponseHandler());
 						ch.pipeline().addLast(new MessageResponseHandler());
