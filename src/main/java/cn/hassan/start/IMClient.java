@@ -1,6 +1,8 @@
 package cn.hassan.start;
 
 import cn.hassan.core.SessionUtil;
+import cn.hassan.handler.HeartBeatTimerHandler;
+import cn.hassan.handler.IMIdleStateHandler;
 import cn.hassan.handler.clinet.LoginResponseHandler;
 import cn.hassan.handler.clinet.MessageResponseHandler;
 import cn.hassan.packet.LoginRequestPacket;
@@ -37,6 +39,8 @@ public class IMClient {
 				.option(ChannelOption.TCP_NODELAY, true)
 				.handler(new ChannelInitializer<SocketChannel>() {
 					protected void initChannel(SocketChannel ch) throws Exception {
+						// 空闲检测
+						ch.pipeline().addLast(new IMIdleStateHandler());
 						//数据拆包粘包使用
 						//ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 7, 4));
 						ch.pipeline().addLast(new Spliter());
@@ -44,6 +48,8 @@ public class IMClient {
 						ch.pipeline().addLast(new LoginResponseHandler());
 						ch.pipeline().addLast(new MessageResponseHandler());
 						ch.pipeline().addLast(new PacketEncoder());
+						// 心跳定时器
+						ch.pipeline().addLast(new HeartBeatTimerHandler());
 					}
 				});
 		connect(bootstrap,"127.0.0.1",8085);
