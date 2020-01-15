@@ -1,6 +1,7 @@
 package cn.hassan.handler.server;
 
 import cn.hassan.core.DateTimeUtils;
+import cn.hassan.core.LoginUtil;
 import cn.hassan.core.Session;
 import cn.hassan.core.SessionUtil;
 import cn.hassan.packet.LoginRequestPacket;
@@ -20,7 +21,7 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, LoginRequestPacket msg) throws Exception {
 
-		String userId = UUID.randomUUID().toString();
+		String userId = randomUserId();
 
 		SessionUtil.bindSession(new Session(userId,msg.getUsername()),ctx.channel());
 
@@ -29,6 +30,7 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
 		System.out.println(DateTimeUtils.getLocalDate() + " 收到客户端登陆请求");
 		responsePacket.setVersion(msg.getVersion());
 		if (validate(msg)) {
+			LoginUtil.markAsLogin(ctx.channel());
 			responsePacket.setSuccess(true);
 			responsePacket.setReason("登陆成功");
 		}else {
@@ -44,6 +46,9 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
 		}else {
 			return true;
 		}
+	}
+	private static String randomUserId() {
+		return UUID.randomUUID().toString().split("-")[0];
 	}
 
 	@Override

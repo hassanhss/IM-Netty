@@ -18,11 +18,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class MessageRequestHandler extends SimpleChannelInboundHandler<MessageRequestPacket> {
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, MessageRequestPacket msg) throws Exception {
-		MessageResponsePacket messageResponsePacket = new MessageResponsePacket();
-		System.out.println(DateTimeUtils.getLocalDate() + ": 收到客户端消息: " + msg.getMessage());
-		messageResponsePacket.setMessage("服务端回复【" + msg.getMessage() + "】");
-		ctx.channel().writeAndFlush(messageResponsePacket);
-
 		//1,拿到消息发送方的会话信息
 		Session session = SessionUtil.getSession(ctx.channel());
 		//2,通过消息发送方的会话信息构建要发送的信息
@@ -30,6 +25,15 @@ public class MessageRequestHandler extends SimpleChannelInboundHandler<MessageRe
 		responsePacket.setFromUserId(session.getUserId());
 		responsePacket.setFromUsername(session.getUsername());
 		responsePacket.setMessage(msg.getMessage());
+
+		//返回给发送端信息
+		MessageResponsePacket messageResponsePacket = new MessageResponsePacket();
+		System.out.println(DateTimeUtils.getLocalDate() + ": 收到客户端消息: " + msg.getMessage());
+		messageResponsePacket.setFromUserId(session.getUserId());
+		messageResponsePacket.setFromUsername(session.getUsername());
+		messageResponsePacket.setMessage("服务端回复【" + msg.getMessage() + "】");
+		ctx.channel().writeAndFlush(messageResponsePacket);
+
 		//3,拿到消息接收方的channel
 		Channel channel = SessionUtil.getChannel(msg.getToUserId());
 		//4,将消息发送给接收方

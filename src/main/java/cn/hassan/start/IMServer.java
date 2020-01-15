@@ -42,9 +42,9 @@ public class IMServer {
 	private static void bind(final ServerBootstrap bootstrap, final int port) {
 		bootstrap.bind(port).addListener(future -> {
 			if (future.isSuccess()) {
-				System.out.println(DateTimeUtils.getLocalDate() + " 端口[" + port + "]绑定成功");
+				System.out.println(DateTimeUtils.getLocalDate() + " 服务端启动成功");
 			}else {
-				System.out.println(DateTimeUtils.getLocalDate() + " 端口[" + port + "]绑定失败");
+				System.out.println(DateTimeUtils.getLocalDate() + " 服务端启动失败");
 			}
 		});
 	}
